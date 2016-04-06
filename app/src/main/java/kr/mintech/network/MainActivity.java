@@ -13,6 +13,10 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -28,18 +32,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.e("로깅","로깅");
+        Log.e("로깅", "로깅");
 
-        mTextView = (TextView)findViewById(R.id.jsonData);
+        mTextView = (TextView) findViewById(R.id.jsonData);
     }
 
-        // Called when send button is clicked
-        @Override
-        public boolean onCreateOptionsMenu(Menu menu) {
-            // Inflate the menu; this adds items to the action bar if it is present.
-            getMenuInflater().inflate(R.menu.menu_main, menu);
-            return true;
-        }
+    // Called when send button is clicked
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -61,11 +65,11 @@ public class MainActivity extends AppCompatActivity {
 
         // set the server URL
 //        String url = "http://www.word.pe.kr/keyword/testJson.php";
-        String url = "https://api.forecast.io/forecast/d854c54483bf47d30806884f5081c67b/37.514236,127.03159299999993";
+        String url = "http://api.openweathermap.org/data/2.5/forecast/daily?q=Seoul&mode=json&units=metric&cnt=7&APPID=20bca9bd534d04520d1a51a054f86e50";
 
         // call data from web URL
         try {
-            ConnectivityManager conManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+            ConnectivityManager conManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo netInfo = conManager.getActiveNetworkInfo();
 
             if (netInfo != null && netInfo.isConnected()) {
@@ -79,11 +83,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private class DownloadJson extends AsyncTask<String,String,String> {
+    private class DownloadJson extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... arg0) {
             try {
-                return (String)getData((String) arg0[0]);
+                return (String) getData((String) arg0[0]);
             } catch (Exception e) {
                 return "Json download failed";
             }
@@ -91,47 +95,37 @@ public class MainActivity extends AppCompatActivity {
 
         protected void onPostExecute(String result) {
             mTextView.setText(result);
-//            try {
-//                JSONArray jArray = new JSONArray(result);
-//
-//                String[] jsonName = {"time"};
-//                String[][] parsedData = new String[jArray.length()][jsonName.length];
-//
-//                JSONObject json = null;
-//                for (int i=0; i < jArray.length(); i++) {
-//                    json = jArray.getJSONObject(i);
-//                    if (json != null) {
-//                        for (int j=0; j < jsonName.length; j++) {
-//                            parsedData[i][j] = json.getString(jsonName[j]);
-//                        }
-//                    }
-//                }
-//
-//                for (int i=0; i < parsedData.length; i++) {
-//                    Log.e("mini", "time" + i + ":" + parsedData[i][0]);
-//                    Log.e("mini", "----------------------------------");
-//                }
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
+            String time = "";
 
-            // =====================================
+            try {
+                Log.e("try", "진입은 하니?");
 
-//            String time = "";
-//            try {
-//                JSONArray jarray = new JSONArray(result);   // JSONArray 생성
-//                for(int i=0; i < jarray.length(); i++){
-//                    JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
-//                        time = jObject.getString("time");
-//
-//                        Log.e("mini", "time:" + time);
+                JSONObject jsonresult = new JSONObject(result.toString());
+                JSONObject city = jsonresult.getJSONObject("city");
+                JSONArray country =  city .getJSONArray("id");
+
+
+                for (int i = 0; i < country.length(); i++) {
+                    JSONObject object = country.getJSONObject(i);
+                    JSONArray  lon = object.getJSONArray("lon");
+                    String test = lon.getString(i);
+                    Log.e("mini", "test:" + test);
+                }
+
+//                Log.d("obj", "obj:" + obj.toString());
+//                JSONArray arr = obj.getJSONArray("country");
+//                Log.d("arr", "arr:" + arr.toString());
+//                for (int i = 0; i < arr.length(); i++) {
+//                    time = arr.getString(i);
+//                    Log.e("mini", "time:" + time);
 //                }
-//            }
-//            catch (JSONException e) {
-//                Log.e("문제는.","catch진입");
-//                e.printStackTrace();
-//            }
+
+            } catch (JSONException e) {
+                Log.e("catch", "catch진입");
+                e.printStackTrace();
+            }
         }
+
 
         private String getData(String strUrl) {
             StringBuilder sb = new StringBuilder();
