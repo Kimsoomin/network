@@ -102,15 +102,19 @@ public class MainActivity extends AppCompatActivity {
 
                 JSONObject jsonresult = new JSONObject(result.toString());
                 JSONObject city = jsonresult.getJSONObject("city");
-                JSONArray country =  city .getJSONArray("id");
 
-
-                for (int i = 0; i < country.length(); i++) {
-                    JSONObject object = country.getJSONObject(i);
-                    JSONArray  lon = object.getJSONArray("lon");
-                    String test = lon.getString(i);
+                for (int i = 0; i < city.length(); i++) {
+                    JSONArray name = city.getJSONArray("name");
+                    String test = name.getString(i);
                     Log.e("mini", "test:" + test);
                 }
+
+//                for (int i = 0; i < name.length(); i++) {
+//                    JSONObject object = name.getJSONObject(i);
+//                    JSONArray  lon = object.getJSONArray("lon");
+//                    String test = lon.getString(i);
+//                    Log.e("mini", "test:" + test);
+//                }
 
 //                Log.d("obj", "obj:" + obj.toString());
 //                JSONArray arr = obj.getJSONArray("country");
