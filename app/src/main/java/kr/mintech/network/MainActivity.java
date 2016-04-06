@@ -13,10 +13,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -64,8 +60,8 @@ public class MainActivity extends AppCompatActivity {
     public void sendData(View view) {
 
         // set the server URL
-        String url = "http://www.word.pe.kr/keyword/testJson.php";
-//        String url = "https://api.forecast.io/forecast/44dd3a37c6af16f88008084d2cf41d9c/37.514236,127.03159299999993";
+//        String url = "http://www.word.pe.kr/keyword/testJson.php";
+        String url = "https://api.forecast.io/forecast/d854c54483bf47d30806884f5081c67b/37.514236,127.03159299999993";
 
         // call data from web URL
         try {
@@ -95,31 +91,46 @@ public class MainActivity extends AppCompatActivity {
 
         protected void onPostExecute(String result) {
             mTextView.setText(result);
-            try {
-                JSONArray jArray = new JSONArray(result);
+//            try {
+//                JSONArray jArray = new JSONArray(result);
+//
+//                String[] jsonName = {"time"};
+//                String[][] parsedData = new String[jArray.length()][jsonName.length];
+//
+//                JSONObject json = null;
+//                for (int i=0; i < jArray.length(); i++) {
+//                    json = jArray.getJSONObject(i);
+//                    if (json != null) {
+//                        for (int j=0; j < jsonName.length; j++) {
+//                            parsedData[i][j] = json.getString(jsonName[j]);
+//                        }
+//                    }
+//                }
+//
+//                for (int i=0; i < parsedData.length; i++) {
+//                    Log.e("mini", "time" + i + ":" + parsedData[i][0]);
+//                    Log.e("mini", "----------------------------------");
+//                }
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
 
-                String[] jsonName = {"name","age","exam"};
-                String[][] parsedData = new String[jArray.length()][jsonName.length];
+            // =====================================
 
-                JSONObject json = null;
-                for (int i=0; i < jArray.length(); i++) {
-                    json = jArray.getJSONObject(i);
-                    if (json != null) {
-                        for (int j=0; j < jsonName.length; j++) {
-                            parsedData[i][j] = json.getString(jsonName[j]);
-                        }
-                    }
-                }
-
-                for (int i=0; i < parsedData.length; i++) {
-                    Log.e("mini", "name테스트" + i + ":" + parsedData[i][0]);
-                    Log.e("mini", "age테스트" + i + ":" + parsedData[i][1]);
-                    Log.e("mini", "exam테스트" + i + ":" + parsedData[i][2]);
-                    Log.e("mini", "----------------------------------");
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+//            String time = "";
+//            try {
+//                JSONArray jarray = new JSONArray(result);   // JSONArray 생성
+//                for(int i=0; i < jarray.length(); i++){
+//                    JSONObject jObject = jarray.getJSONObject(i);  // JSONObject 추출
+//                        time = jObject.getString("time");
+//
+//                        Log.e("mini", "time:" + time);
+//                }
+//            }
+//            catch (JSONException e) {
+//                Log.e("문제는.","catch진입");
+//                e.printStackTrace();
+//            }
         }
 
         private String getData(String strUrl) {
