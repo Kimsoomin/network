@@ -1,8 +1,5 @@
 package kr.mintech.network;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -11,7 +8,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,53 +33,34 @@ public class MainActivity extends AppCompatActivity {
         mTextView = (TextView) findViewById(R.id.jsonData);
     }
 
-    // Called when send button is clicked
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
-    // Called when send button is clicked
     public void sendData(View view) {
-
-        // set the server URL
-//        String url = "http://www.word.pe.kr/keyword/testJson.php";
-        String url = "http://api.openweathermap.org/data/2.5/forecast/daily?q=Seoul&mode=json&units=metric&cnt=7&APPID=20bca9bd534d04520d1a51a054f86e50";
-
-        // call data from web URL
-        try {
-            ConnectivityManager conManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo netInfo = conManager.getActiveNetworkInfo();
-
-            if (netInfo != null && netInfo.isConnected()) {
-                new DownloadJson().execute(url);
-            } else {
-                Toast toast = Toast.makeText(getApplicationContext(), "네트워크를 확인하세요", Toast.LENGTH_LONG);
-                toast.show();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        String url = "https://api.forecast.io/forecast/7cb42b713cdf319a3ae7717a03f36e41/37.517365,127.026112";
+        new DownloadJson().execute(url);
     }
 
     private class DownloadJson extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            //MainThread : 백그라운드 작업을 시작하기 이전에 "뷰작업"을 해라
+            //프로그레스바를 보여준다
+        }
+
         @Override
         protected String doInBackground(String... arg0) {
             try {
@@ -93,41 +70,68 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+
         protected void onPostExecute(String result) {
             mTextView.setText(result);
-            String time = "";
-
+            //백그라운드 작업이 완료되었을 때
             try {
                 Log.e("try", "진입은 하니?");
 
-                JSONObject jsonresult = new JSONObject(result.toString());
-                JSONObject city = jsonresult.getJSONObject("city");
+                JSONObject jsonResult = new JSONObject(result.toString());
+                JSONObject dailyObject = jsonResult.getJSONObject("daily");
+                JSONArray dataArray = dailyObject.getJSONArray("data");
 
-                for (int i = 0; i < city.length(); i++) {
-                    JSONArray name = city.getJSONArray("name");
-                    String test = name.getString(i);
-                    Log.e("mini", "test:" + test);
+                for (int i = 0; i < dataArray.length(); i++) {
+                    JSONObject obj = dataArray.getJSONObject(i);
+                    String summary = obj.getString("summary");
+                    Log.e("test", "test:" + summary);
+
                 }
-
-//                for (int i = 0; i < name.length(); i++) {
-//                    JSONObject object = name.getJSONObject(i);
-//                    JSONArray  lon = object.getJSONArray("lon");
-//                    String test = lon.getString(i);
-//                    Log.e("mini", "test:" + test);
-//                }
-
-//                Log.d("obj", "obj:" + obj.toString());
-//                JSONArray arr = obj.getJSONArray("country");
-//                Log.d("arr", "arr:" + arr.toString());
-//                for (int i = 0; i < arr.length(); i++) {
-//                    time = arr.getString(i);
-//                    Log.e("mini", "time:" + time);
-//                }
 
             } catch (JSONException e) {
                 Log.e("catch", "catch진입");
                 e.printStackTrace();
             }
+
+            //뷰처리 프로그레스바 안보임 /
+            // =============================================
+//            try {
+//                Log.e("try", "진입은 하니?");
+//                JSONObject obj = new JSONObject(result.toString());
+//                JSONArray array = obj.getJSONArray("city");
+//                Log.d("test","city"+array.toString());
+//
+//            } catch (JSONException e) {
+//                Log.e("catch", "catch진입");
+//                e.printStackTrace();
+//            }
+
+            //=================================================
+//            try {
+//                JSONArray jArray = new JSONArray(result);
+//
+//                String[] jsonName = {"name", "age", "exam"};
+//                String[][] parsedData = new String[jArray.length()][jsonName.length];
+//
+//                JSONObject json = null;
+//                for (int i = 0; i < jArray.length(); i++) {
+//                    json = jArray.getJSONObject(i);
+//                    if (json != null) {
+//                        for (int j = 0; j < jsonName.length; j++) {
+//                            parsedData[i][j] = json.getString(jsonName[j]);
+//                        }
+//                    }
+//                }
+//
+//                for (int i = 0; i < parsedData.length; i++) {
+//                    Log.i("mini", "name" + i + ":" + parsedData[i][0]);
+//                    Log.i("mini", "age" + i + ":" + parsedData[i][1]);
+//                    Log.i("mini", "exam" + i + ":" + parsedData[i][2]);
+//                    Log.i("mini", "----------------------------------");
+//                }
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
         }
 
 
